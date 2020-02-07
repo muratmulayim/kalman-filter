@@ -1,0 +1,129 @@
+body{
+	/*width: 1280px;*/
+	/*height: 720px;*/
+	padding: 0;
+	margin: 0;
+	left: 0;
+	top: 0;
+	/*overflow: hidden;*/
+	background: cadetblue;
+}
+
+.hidden{
+	display: none;
+}
+
+div.buton-element {
+	font-size: 40px;
+	font-weight: bold;
+    background-color: darkslategrey;
+    width: 400px;
+    height: 80px;
+    user-select: none;
+    -webkit-user-select: none;
+    text-align: center;
+    line-height: 80px;
+    color: white;
+    margin-left: 200px;	
+	border: 5px solid green;
+    border-radius: 6px;
+}
+
+div.buton-element.clicked{
+	background-color: slategray;
+}
+
+.common-map-size{
+	width: 800px;
+	height: 800px;
+}
+
+
+#logOutput{
+	position: absolute;
+	float: right;
+	width: 900px;
+	padding: 20px;
+    background: aqua;
+	margin-left: 20px;
+	margin-bottom: 50px;
+	margin-top: 50px;
+}
+
+#mapContainer.map-outer-wrapper{
+	position: relative;
+	left: 100px;
+	padding: 20px;
+}
+
+#mapContainer #map.map-wrapper{
+	position: relative;
+	border: 2px solid #ccc;
+}
+
+#mapContainer #imageContainer.image-outer-wrapper {
+	position: absolute;
+    top: 20px;
+    left: 20px;
+    border: 2px solid #ccc;
+}
+
+#mapContainer #map .grid {
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 0;
+    float: left;
+}
+
+
+#mapContainer.map-outer-wrapper .common-location-image-wrapper{
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	left: 0%;
+    top: 100%;
+}
+
+#mapContainer .has-transition {
+	-webkit-transition: 300ms linear;
+	transition: 300ms linear;
+}
+
+#mapContainer.map-outer-wrapper .common-location-image {
+	position: absolute;
+	background-repeat: no-repeat;
+    background-size: contain;
+	left: 0px;
+    top: 0px;
+}
+
+#mapContainer.map-outer-wrapper #objectImage{
+	width: 20px;
+	height: 20px;
+	background-image: url("./images/loc.png");
+	left: -10px;
+    top: -10px;
+}
+
+#mapContainer.map-outer-wrapper #observedLocationImage{
+	width: 26px;
+	height: 26px;
+	background-image: url("./images/observed.png");
+	left: -13px;
+    top: -13px;
+}
+
+#mapContainer.map-outer-wrapper #estimatedLocationImage{
+	width: 32px;
+	height: 32px;
+	background-image: url("./images/estimated.png");
+	left: -16px;
+    top: -16px;
+}
+
+div.statistic-chart-wrapper{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+    top: 0;
+    left: 0;
+}

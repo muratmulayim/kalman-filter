@@ -1,0 +1,480 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{lipsum}
+\usepackage{wrapfig}
+\usepackage{amsmath}
+
+\begin{document}
+
+\begin{titlepage}
+	\centering
+	\includegraphics[width=0.15\textwidth]{images/university_logo}\par\vspace{1cm}
+	{\scshape\LARGE Ege University \par}
+	\vspace{1cm}
+	{\scshape\Large Term Project \par}
+	\vspace{1.5cm}
+	{\huge\bfseries Kalman Filter \par}
+	\vspace{1cm}
+	{\Large\itshape 551: The Principles of Signals and Wireless Communication for Embedded Systems\par}
+	\vspace{2cm}
+	{\Large\bfseries Murat MULAYIM \par}
+	{\Large\bfseries 91170000035 \par}
+	\vfill
+	{\Large\bfseries Lecturer: Assoc. Prof. K. Sinan YILDIRIM \par}
+	\vfill
+
+% Bottom of the page
+	{\large January 20, 2019 \par}
+\end{titlepage}
+
+
+\begin{abstract}
+{\it
+In this report, we introduce the Kalman Filter and how object tracking is implemented on Javascript, a web page. Besides, Javascript is supported by HTML and CSS for purpose of user interface. \newline
+
+The Kalman Filter consists of two main steps: Prediction and Update. Each steps are introduced and implemented as function. \newpage
+}
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Kalman Filter is a method of predicting the future state of a system based on the previous ones. The algorithm essentially implements a set of mathematical equations containing
+
+\begin{itemize}
+  \item[o] Prediction phase.
+  \item[o] Update phase.
+\end{itemize}
+
+
+Kalman filter is known as filter function. On the other hand, it is basically an estimator function, not only a filter function. It works recursively. That means the output of previous step can be used as the input of next step. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.4]{images/flow}
+\caption{The Filter Flow}
+\label{fig:TheFilterFlow}
+\end{figure}
+
+
+The model compares the estimation on the prediction phase and observation on the update phase. The difference between estimation and observation is scaled with a factor known as Kalman Gain. In order to improve the future estimation, Kalman Gain factor is used as an input into model for feedback.
+
+Kalman filters are ideal for systems which are continuously changing.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Formulation of Kalman Filter}
+
+The Kalman filter addresses the general problem of trying to estimate the state $\mu $ $\in$ R,
+\[ \mu_{t} = A\mu_{t-1} + Bu_{t-1} + w_{t-1} \]
+
+{\setlength{\parindent}{0cm}
+with a measurement z $\in$ R,
+}
+\[ z_{t} = C\mu_{t} + v_{t} \]
+
+
+The random variables $w_{t} $  and  $v_{t} $ represent the process and measurement noise. They are assumed to be independent of each other with normal probability distributions 
+\[ p(w) \approx N(0,Q) \]
+\[ p(v) \approx N(0, R) \]
+
+In practice, the process noise covariance Q and measurement noise R covariance
+matrices might change with each time step or measurement. The $\textit{nxn}$ matrix A relates the state at the previous time step to the state at the current step, in the absence of either a driving function or
+process noise. The $\textit{nx1}$ matrix B relates the optional control input u $\in$ R to the
+state x. The $\textit{mxn}$ matrix C in the measurement equation relates the state to the
+measurement $z_{t}$.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{How does Kalman work ?}
+
+The Kalman filter consists of two phasess: 
+\begin{itemize}[leftmargin=15.0mm]
+  \item[1.] Prediction phase, where the next state of the system is predicted with given previous measurements $z_{t-1}$
+
+  
+  \begin{itemize}
+  \centering
+      \item[] $\mu_{t}^{-}$ = $A\mu_{t-1} + Bu_{t} $
+      \item[] $\sum_{t}^{-}$ = $A\sum_{t}A_{t-1}^{T} + Q_{t-1} $
+  \end{itemize}
+     
+  
+  \item[2.] Update phase, where the current state of the system is estimated with given the measurement $z_{t}$
+  
+  \begin{itemize}
+  \centering
+     \item[] $ K = \sum_{t}^{-} C^{T} ( R + C \sum_{t}^{-} C^{T})^{-1} $
+     \item[] $ \mu_{t} = A\mu_{t-1}^{-} + K(z_{t} - CA\mu_{t-1}^{-}) $
+     \item[] $ \sum_{t} = \sum_{t}^{-} - KC\sum_{t}^{-} $
+  \end{itemize}
+  
+\end{itemize}
+
+{\setlength{\parindent}{0cm}
+where, 
+}
+
+\begin{itemize}
+     \item[*] $ \mu_{t}^{-} $ and $ \sum_{t}^{-} $ are the predicted mean and covariance state before measurement on step t 
+     \item[*] A and B are state transition and control matrices
+     \item[*] u is control variables
+     \item[*] Q is process noise covariance matrix, represents error due to process
+     \item[*] R is measurement noise covariance matrix, represents error from measurement
+     \item[*] C is measurement matrix, known as mapping measurements onto state
+     \item[*] $ \mu_{t} $ and $ \sum_{t} $ are the estimated mean and covariance state after measurement on step t
+     \item[*] $ z_{t} $ is mean of the measurement on step t
+     \item[*] K is the Kalman Gain on step t. Kalman Gain shows how much the predictions should be corrected. 
+\end{itemize}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.4]{images/equations}
+\caption{Kalman Equations}
+\label{fig:KalmanEquations}
+\end{figure}
+
+On the update phase, we compute the real value of $ \mu_{t} $ at step t and it is the purpose of we want to deal with. 
+
+\par The applications of the Kalman Filtering in real world can be listed as following:
+\begin{itemize}
+     \item[$\surd$] A radar application where one is interested in tracking a target. The system also can provide some information about location, speed and acceleration of the target. There could be noise but Kalman Filter and eligible equations will deal with the noise.
+     \item[$\surd$] Navigation system can use Kalman Filtering and prediction techniques to locate the object with tolerance.
+     \item[$\surd$] Many computer vision applications such as feature and cluster tracking.
+     \item[$\surd$] A vision‐based real‐time vehicle tracking system used vision camera to achieve target tracking. The number of tracked vehicle can be single or multiple. 
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Kalman Filter on Object Tracking Problem}
+The claim of the project is to implement Kalman Filtering functionality on an object tracking system. The language has been chosen to implement is Javascript and supported by HTML5 and CSS3. Tree view of the project is constructed as Figure~\ref{fig:projectTree}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{Project Structure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=1]{images/project-tree}
+\caption{Project Tree}
+\label{fig:projectTree}
+\end{figure}
+
+In order to initialise the project, $\textit{ index.html }$ file must be visited via an Internet browser just clicking double click, if default action of Operaing System is to open via browser. The explanation of JS, HTML codes and project tree is:
+
+\begin{itemize}
+    \item[+] \underline{webapp}
+    \begin{itemize}
+        \item[+] \underline{code}
+            \begin{itemize}
+                \item[-] \underline{Bootloader.js} : Handles the page load
+                \item[-] \underline{Data.js} : Stores the data about the path
+                \item[-] \underline{KalmanFilterVariables.js} : Stores the initial values of variables that are used in Kalman Filter equations
+                \item[-] \underline{KalmanFilter.js} : Implements both of Prediction and Update phases of Kalman Filter equations
+                \item[-] \underline{Logger.js} : Implements logging type and level
+                \item[-] \underline{Painter.js} : Handles path-extractor.html page load
+                \item[-] \underline{Statistics.js} : Implements statistic charts
+            \end{itemize}
+        \item[-] \underline{index.html} : Initial page of the project
+        \item[-] \underline{path-extractor.html} : A web page to create a pah by using mouse pointer. Mouse left button must be pressed down while drawing path. Once path is created, values will be printed at the end of yellow area. Those values must be copy-pasted into  $\textit{ locationMatrixActual }$ variable of  $\textit{ Data.js }$ module to activate the path created.
+        \item[+] \underline{skin}
+            \begin{itemize}
+                \item[+] \underline{images}
+                    \begin{itemize}
+                        \item[-] \underline{estimates.png} : The circle with painted with a shade of yellow to show estimated locations
+                        \item[-] \underline{loc.png} : A red circle to represent the object
+                        \item[-] \underline{observed.png} : The circle to show the real observed position of object. Painted with a shade of dark blue 
+                    \end{itemize}
+                \item[-] \underline{skin.css} : Stores CSS properties of related HTML tags
+            \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{How to Use}
+
+Whenenever index.html web page is navigated, Figure~\ref{fig:projectMainPage} will be shown on the screen. Object which is drawn with red color goes around the square are according to path information. The map can be considered as a coordinate system starting from 0 point and to 100 point. Object starts from [0, 0] location and moves around based on defined path. Once the path is completed, there will be shown a chart related to estimations and observations on the screen. If it is wanted to reload the scenario, the page must be reloaded.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.35]{images/map}
+\caption{Project Main Page}
+\label{fig:projectMainPage}
+\end{figure}
+
+
+The path can be reviewed in $\textit{ Data.js }$ file. \newline
+
+If a new path is wanted to create, it is easily can be done by visiting $\textit{ path-extractor.html }$(shown as Figure~\ref{fig:pathCreaterPage}) page. The map is similar to previous page and represents a coordinate system with a drawing area. Path can be drawn by keeping mouse left button down without exceeding drawing area. If path is ready, mouse left button must be released. Then path array will be printed on bottom of drawable area. It can now be copied as text and pasted into related $\textit{ Data.js }$ file. After reloading the $\textit{ index.html }$ page, the new path will be activated.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.35]{images/path-creator}
+\caption{Path Creater Page}
+\label{fig:pathCreaterPage}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implementation}
+Kalman Filter implementation is done by Javascript and supperted by HTML and CSS for UI purpose. Logic runs on $\textit{ KalmanFilter.js }$ module. It has public and private functions.
+
+\begin{itemize}
+    \item[o] \underline{Public functions}
+    \begin{itemize}
+        \item[s] load() : Initial method of the module.
+        \item[s] predict() : Function to run prediction phase of Kalman Filter
+        \item[s] update() : Function to run Update phase of Kalman Filter
+        \item[s] doKalmanFiter() : Function to run entire Kalman Filter 
+        \item[s] getStatisticData() : Function to get stored data that will be used for statistic purpose
+    \end{itemize}
+\end{itemize}
+
+
+\newpage
+
+
+According to Kalman Filter equations, equations are: 
+\begin{itemize}
+    \item[o] \underline{Prediction Phase}
+        \begin{itemize}[leftmargin=-15mm]
+        \setlength\itemsep{0.7em}
+    
+            \fbox{\begin{minipage}{40em}
+                \item[] $ predictedState = A * computedState_{t-1} + B * controlSignal $
+                \item[] $ predicted$\textunderscore $P = A * computed$\textunderscore $P_{t-1} * A^{T} + processNoise $
+            \end{minipage}}
+        \end{itemize}
+    
+    \item[o] \underline{Update Phase}
+        \begin{itemize} [leftmargin=-15mm]
+        \setlength\itemsep{0.7em}
+            \fbox{\begin{minipage}{40em}
+                \item[] $ K = predicted$\textunderscore $P_{t} * C^{T} * (C * predicted$\textunderscore $P_{t}^{T} * C^{T} + measurementNoise)^{-1} $
+ 
+                \item[] $ computedState = A * predictedState_{t} +  K_{t} * (observedPosition_{t} - C * A * predictedState_{t} ) $
+
+                \item[] $ computed$\textunderscore $P =  (1 - K_{t} * C) * predicted$\textunderscore $P_{t} $
+            \end{minipage}}
+        \end{itemize}
+\end{itemize}
+
+
+
+
+All the Kalman Filter logic runs inside $\textit{ KalmanFilter.js }$ module and $\textit{ Bootloader.js }$ feeds the data about observed location in terms of x and y as an 2x1 matrix.
+
+Variable definitions stored inside $\textit{ KalmanFilterVariables.js }$ module and on the load() function, initial values are copied to $\textit{ KalmanFilter.js }$ module.
+
+Variables that are used in equations and initializations are listed in the following. 
+\begin{itemize}
+    \item[o] \underline{dt} : Represents sampling rate as number. Used for initializing $\textit{processNoise} $, $\textit{A}$ and $\textit{B}$.
+    \item[o] \underline{A} : State update transition matrix. Used in both phases. Dimension: 4x4 
+    \item[o] \underline{B} : Optional control input to the predictedState. Dimension: 4x1
+    \item[o] \underline{C} : Measurement function that will apply to the state estimation to get expected next/new measurement. Dimension: 2x4
+    \item[o] \underline{K} : Known as Kalman Gain. It tells how much the predictions should be corrected. Dimension 4x2
+    \item[o] \underline{initialState} : Represents initial state of system containing x and y positions and velocities. Dimension: 4x1 
+    \item[o] \underline{predictedState} : Stores predicted state of the system on prediction phase. Initial value is equal to initialState. Dimension: 4x1
+    \item[o] \underline{computedState} : Stores computed state of the system on update phase. Initial value is equal to initialState. Dimension: 4x1
+    \item[o] \underline{measurementNoise} : Measurement noise in directions on update phase. Some resources represent it as $\sum_{v}$.Used for calculation of K Kalman Gain. Dimension: 2x2
+    \item[o] \underline{processNoise} : Process noise covariance matrix. Dimension: 4x4
+    \item[o] \underline{controlSignal} : The control input.
+    \item[o] \underline{predicted \textunderscore P} : The predicted error covariance matrix of previous step, computed in prediction phase before measurement. Initially equals to processNoise. Dimension: 4x4
+    \item[o] \underline{computed \textunderscore P} : The computed error covariance matrix of current step, computed in update phase after measurement. Initially equals to processNoise. Dimension: 4x4
+\end{itemize}
+
+Kalman filter works in the project as an estimator. First of all, filter tries to predict the current state of the system. Operation runs according to previous observed state. Secondly and lastly, we now know the observed location. However, we are not sure about its observed position. Thus, we need to estimate its position by removing part of or entire noise in the equations. 
+
+The reason of using Kalman filter is that even we know observed position of object, we are not sure if it is correct or not because there could be several noises such as process noise and measurement noise while measuring signal on the environment where the object is.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Particle filter}
+Kalman filter can model only Gaussian distributed systems. Gaussian Distribution has regular possibility distribution like shown in Figure~\ref{fig:GaussianDistribution} . 
+
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.4]{images/gaussian}
+\caption{Gaussian Distribution}
+\label{fig:GaussianDistribution}
+\end{figure}
+
+All the systems on the environment would not have Gaussian distribution. There could be several systems that have several non-linear and/or non-gaussian distributed possibilities such as shown in Figure~\ref{fig:NonGaussianDistribution}. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.35]{images/other-distribution}
+\caption{Non Gaussian Distribution}
+\label{fig:NonGaussianDistribution}
+\end{figure}
+
+The key difference is that, instead of deriving analytic equations as the Kalman filter does, the Particle filter uses simulation methods to generate estimates of the state and the innovations.
+
+The key idea of achieving the problem that is occured by distribution on noises is particle filter. Representation of arbitrary distributions is done by using multiple samples. Using multiple samples gives us a set of particle with weighted. \newline
+
+
+A large class of dynamic models can be represented by a state-space form:
+
+state estimate - $X_{t}$, associated weight - $W_{t}$
+
+\begin{itemize}[leftmargin=15.0mm]
+    \item[] $X_{t+1} = { <X_{t}, W_{t+1}> }_{t=1,2..n}$ \hfill (1)
+    \item[] $Y_{t} = { <X_{t}, V_{t}> }_{t=1,2..n}$ \hfill (2)
+\end{itemize}
+
+This representation handles a stochastic process by finding three objects: a vector that describes the position of the system (a state, $X_{t} \in$ X $\subset R^{l}$) and two functions, one mapping the state today into the state tomorrow (\textit{the transition equation,} (1)) and one mapping the state into observables, $Y_{t}$ (\textit{the measurement equation,} (2)).
+
+The Kalman and Particle filters are algorithms that recursively update an estimate of the state and find the innovations driving a stochastic process given a sequence of observations. The Kalman filter accomplishes this goal by linear projections, while the Particle filter does so by a sequential Monte Carlo method. With the state estimates, we can forecast and smooth the stochastic process. With the innovations, we can estimate the parameters of the model. \newline
+
+Particle filter consists of three main phases.
+\begin{enumerate} [leftmargin=15.0mm]
+    \item Sample the particles using the proposal distribution 
+        \[ x_{t}^{[i]} \sim \pi(x_{t}|..) \]
+    \item Compute the importance weights
+         \[ w_{t}^{[i]} = \frac{target(x_{t}^{[i]}) }{ proposal(x_{t}^{[i]}) } \]
+    \item Resampling:Replace unlikely samples by more likely ones
+\end{enumerate}
+
+\newpage
+An algorithm for particle filter is:
+
+\begin{itemize}
+    \item[] \textbf{Particle\textunderscore filter($X_{t-1}$, $u_{t}$, $z_{t}$) }
+        \begin{itemize}
+            \item[] $\widehat{X}_{t}$ = $X_{t}$ = $\emptyset$
+            \item[] for m = 1 to M do
+                \begin{itemize}
+                    \item[] sample $x_{t}^{[m]} \sim \pi(x_{t})$
+                    \item[] $w_{t}^{[m]} = \frac{ p(x_{t}^{[m]}) }{ \pi(x_{t}^{[m]}) }$
+                    \item[] $\widehat{X}_{t} = \widehat{X}_{t} + <x_{t}^{[m]}, w_{t}^{[m]}>$
+                \end{itemize}
+            \item[] endfor
+            \item[] for m = 1 to M do
+                \begin{itemize}
+                    \item[] draw i with probability $\alpha$ $w_{t}^{[i]}$
+                    \item[] add $x_{t}^{[i]}$ to $X_{t}$
+                \end{itemize}
+            \item[] endfor
+            \item[]
+            \item[] return $X_{t}$
+        \end{itemize}
+\end{itemize}
+
+
+
+In order to summarize particle filters
+\begin{itemize}
+    \item[o] Particle filters are non-parametric, recursive Bayes filters
+    \item[0] Posterior is represented by a set of weighted samples
+    \item[0] Particle filters are not limited to Gaussians
+    \item[o] Proposal to draw new samples
+    \item[0] Weight to account for the differences between the proposal and the target
+    \item[o] Work well in low-dimensional spaces   
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Object Tracking Problem using Particle Filter}
+{\bfseries Particle }: A single particle is also known as a sample. The reason for this is due to its role (sample) for the target(posterior) distribution. Each particle contains:
+\begin{enumerate}
+    \item State Estimate ($X_{t}$)
+    \item Weight ($W_{t}$)
+\end{enumerate}
+
+
+
+
+\begin{wrapfigure}{r}{6cm}
+\caption{A Flow for Object Tracking Problem using Particle Filter}
+\label{wrap-fig:2}
+\includegraphics[width=5.5cm]{images/objTrackingusingParticleFilterFlow}
+\end{wrapfigure} 
+
+Steps: We start with the previous estimation.
+
+\begin{itemize}[leftmargin=0.0mm]
+    \item[] The first step is the particle resampling and weight normalization (red). Then we apply state transition (e.g. motion model) to each particle (green). Those two steps are included into the prediction steps.
+
+    \item[] The update step is formed of measurement and weight update. The measurement is taken using the observation model (gold).
+
+    \item[] Finally, the particles' weights are updated using the observation model in order to give a posterior distribution (red).
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Prediction}
+Prediction is the first step which includes particle selection according to their weight {\bfseries resample }, the next state transition (e.g. applying motion model) {\bfseries drift }(applying motion model without noise) and applying noise {\bfseries diffuse }(applying noise to spread particles). \newline
+
+The first step is the particle resampling. The particles are resampled according to their weights, where the particles which have higher weight have a greater chance to be selected. \newline
+
+We begin with the weighted particles from a previous iteration. Resampling draws new samples from the previous particle set. Resampling step is needed in order to stop degeneracy. Degeneracy happens when a single sample has an extremely dominant weight. After the particles are resampled the weight distribution is set to uniform.
+
+Apply the motion model p($x_{t} | x_{t-1}$) to every particle:
+\begin{itemize}
+    \item[$ \Rightarrow $] $x_{t} = F_{t}x_{t-1} + w_{t}$, where $F_{t}$ is linear motion model and $w_{t}$ is noise
+    \item[$ \Rightarrow $] $\begin{bmatrix}
+                x_{t} \\
+                y_{t} \\ 
+                x_{t}^{-} \\
+                y_{t}^{-} \\
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                1 & 0 & \Delta t & 0 \\
+                0 & 1 & 0 & \Delta t \\
+                0 & 0 & 1 & 0 \\
+                0 & 0 & 0 & 1 \\
+            \end{bmatrix}
+            \begin{bmatrix}
+                x_{t-1} \\
+                y_{t-1} \\ 
+                x_{t-1}^{-} \\
+                y_{t-1}^{-} \\
+            \end{bmatrix}
+            + 
+            w_{t} $
+
+\end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Update}
+After the noisy measurement has been obtained, the update (correction) step begins. Each particle is evaluated and each particles' weight is updated according to obtained likelihood. Observation model models the likelihood that the measurement $z_{t}$ would appear assuming the we know the state $x_{t}$ of the object.
+
+\begin{itemize}
+    \item[-] {\bfseries Obtain observation} $z_{t}$ for each state estimate $x_{t}$
+    
+    \item[-] {\bfseries Evaluate likelihood} that an $x_{t}$ gave rise to $z_{t}$ using observation model
+        \begin{itemize}
+            \item[] p($z_{t} | x_{t}^{n}$) = $e^{- \lambda dist(z_{t}, c)}$
+        \end{itemize}
+        
+     \item[-] {\bfseries Assign weights} are proportional to the likelihood response
+        \begin{itemize}
+            \item[] $ w_{t}^{n} = p(z_{t} | x_{t}^{n}) $ 
+        \end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Particle Filter versus Kalman Filter}
+
+In a linear system with Gaussian noise, the Kalman filter is optimal. In a system that is nonlinear, the Kalman filter can be used for state estimation, but the particle filter may give better results at the price of additional computational effort. In a system that has non-Gaussian noise, the Kalman filter is the optimal linear filter, but again the particle filter may perform better. \newline
+
+Kalman filters have much lower computational requirements than particle filters, but are less flexible. Basically, the math works out so that estimators for this sort of system have a very nice solution
+
+
+
+\end{document}

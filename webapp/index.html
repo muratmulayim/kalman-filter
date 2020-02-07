@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Kalman Filter</title>
+	<link rel="stylesheet" type="text/css" href="./skin/skin.css">
+	<script src="./code/Logger.js"></script>
+	<script src="./code/Bootloader.js"></script>
+	<script src="./code/Data.js"></script>
+	<script src="./code/Grid.js"></script>
+	<script src="./code/KalmanFiter.js"></script>
+	<script src="./code/KalmanFilterVariables.js"></script>
+	<script src="./code/Statistics.js"></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body onload="Bootloader.load()">
+
+	<div id="proceedButton" onclick="Bootloader.proceedButtonClick()" class="buton-element">Proceed</div>
+	
+	<div id="mapContainer" class="map-outer-wrapper common-map-size">
+		<div id="map" class="map-wrapper common-map-size"></div>
+		
+		<div id="imageContainer" class="image-outer-wrapper common-map-size">
+			<div id="objectImageContainer" class="common-location-image-wrapper has-transition">
+				<div id="objectImage" class="common-location-image"></div>
+			</div>
+			
+			<div id="observedLocationImageContainer" class="common-location-image-wrapper has-transition">
+				<div id="observedLocationImage" class="common-location-image"></div>
+			</div>
+			
+			<div id="estimatedLocationImageContainer" class="common-location-image-wrapper has-transition">
+				<div id="estimatedLocationImage" class="common-location-image"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="logOutput"></div>
+	
+	<div id="chartContainer" class="statistic-chart-wrapper hidden"></div>
+
+</body>
+</html>
